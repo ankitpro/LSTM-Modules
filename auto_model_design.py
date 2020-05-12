@@ -1,5 +1,5 @@
 from tensorflow.keras.layers import Dense, LSTM, Dropout
-def Model_Design(optimizer_name, loss_name, model,units, activation_function, input_shape_row, input_shape_col, dropout_unit, hidden_layer_count):
+def Model_Design(optimizer_name, loss_name, model, units, multiple_units, activation_function, input_shape_row, input_shape_col, dropout_unit, hidden_layer_count):
   """
   optimizer_name = Name of the optimizer you want to use in Sequential model. (optimiazer_name = 'adam')
   
@@ -8,6 +8,8 @@ def Model_Design(optimizer_name, loss_name, model,units, activation_function, in
   model = Variable name given to which the model is assigned. (model = Sequential())
   
   units = Dimension of the cell state. (units = 40)
+  
+  multiple_units = Number of units added to the consecutive layers. (multiple_units=20 [units+20 for each consecutive layer])
   
   activation_function = Name of the activation function used. (activation_function = 'relu')
   
@@ -22,11 +24,11 @@ def Model_Design(optimizer_name, loss_name, model,units, activation_function, in
   model.add(LSTM(units = units, activation = activation_function, return_sequences = True, input_shape = (input_shape_row, input_shape_col)))
   model.add(Dropout(dropout_unit))
 
-  units = units + 20
+  units = units + multiple_units
   for i in range(0, hidden_layer_count):
     model.add(LSTM(units = units, activation = activation_function, return_sequences = True))
     model.add(Dropout(dropout_unit))
-    units = units+i*20
+    units = units+i*multiple_units
 
   model.add(LSTM(units = units, activation = activation_function))
   model.add(Dropout(dropout_unit))
