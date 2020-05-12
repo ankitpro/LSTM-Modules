@@ -1,6 +1,6 @@
 # To download the module information from the GitRepo.
-!wget https://raw.githubusercontent.com/ankitpro/LSTM-Modules/master/normalize.py
-!wget https://raw.githubusercontent.com/ankitpro/LSTM-Modules/master/auto_model_design.py
+#!wget https://raw.githubusercontent.com/ankitpro/LSTM-Modules/master/normalize.py
+#!wget https://raw.githubusercontent.com/ankitpro/LSTM-Modules/master/auto_model_design.py
 
 # To import the dependent modules.
 from normalize import normalize_divide_chunks
