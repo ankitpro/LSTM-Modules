@@ -1,4 +1,5 @@
 # To import the dependent modules.
+from tensorflow.keras.layers import Dense, LSTM, Dropout
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import Sequential
 from matplotlib import pyplot as plt
