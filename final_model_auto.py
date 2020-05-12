@@ -71,6 +71,8 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   X_test, y_test = normalize_divide_chunks(data_new, scaler=scaler, look_back=look_Back, start=start_col, end=end_col)
   y_pred = model_built.predict(X_test)
   modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
+  model_file_path = %pwd + "/" + modelname
+  print("Model File name: {}".format(model_file_path))
   model_built.save_weights(modelname)
   scale_val = scaler.scale_
   y_pred_scaler_val = 1/scale_val[0]
