@@ -72,7 +72,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   y_pred = model_built.predict(X_test)
   modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
   cwd = os.getcwd()
-  model_file_path = %pwd + "/" + modelname
+  model_file_path = cwd + "/" + modelname
   print("Model File name: {}".format(model_file_path))
   model_built.save_weights(modelname)
   scale_val = scaler.scale_
