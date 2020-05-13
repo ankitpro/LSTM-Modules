@@ -1,7 +1,17 @@
 # To import the dependent modules.
-from tensorflow.keras.layers import Dense, LSTM, Dropout
+#from tensorflow.keras.layers import Dense, LSTM, Dropout
+#from tensorflow.keras import Sequential
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras import Sequential
+from keras.models import Sequential
+from keras.layers import Dense, LSTM, Dropout
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import cohen_kappa_score
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 import numpy as np
 import os
@@ -65,11 +75,41 @@ def Complete_data_modelling(data, train_percent, look_Back, \
                               units= noofunits, multiple_units=multiple_units, activation_function=activation_Function, \
                               input_shape_row=X_train.shape[1], input_shape_col= X_train.shape[2], \
                               dropout_unit=dropout_Unit, hidden_layer_count=hidden_Layer_Count)
-  model_built.fit(X_train, y_train, epochs=Epochs, batch_size=batch_Size)
+  model_built.summary()
   data_new = data_train.tail(look_Back)
   data_new = data_new.append(data_test, ignore_index=True)
   X_test, y_test = normalize_divide_chunks(data_new, scaler=scaler, look_back=look_Back, start=start_col, end=end_col)
-  y_pred = model_built.predict(X_test)
+  history_model = model_built.fit(X_train, y_train, epochs=Epochs, batch_size=batch_Size, validation_data=(X_test, y_test), shuffle=False)
+  # predict probabilities for test set
+  y_pred = model_built.predict(X_test, verbose=0)
+  # predict crisp classes for test set
+  y_pred_classes = model_built.predict_classes(X_test, verbose=0)
+  # reduce to 1d array
+  y_pred = y_pred[:, 0]
+  y_pred_classes = y_pred_classes[:, 0]
+  #print(y_test,y_pred_classes)
+  # accuracy: (tp + tn) / (p + n)
+  accuracy = accuracy_score(y_test.round(), y_pred_classes.round())
+  print('Accuracy: %f' % accuracy)
+  # precision tp / (tp + fp)
+  precision = precision_score(y_test.round(), y_pred_classes.round())
+  print('Precision: %f' % precision)
+  # recall: tp / (tp + fn)
+  recall = recall_score(y_test.round(), y_pred_classes.round())
+  print('Recall: %f' % recall)
+  # f1: 2 tp / (2 tp + fp + fn)
+  f1 = f1_score(y_test.round(), y_pred_classes.round())
+  print('F1 score: %f' % f1)
+  # kappa
+  kappa = cohen_kappa_score(y_test.round(), y_pred_classes.round())
+  print('Cohens kappa: %f' % kappa)
+  # ROC AUC
+  auc = roc_auc_score(y_test.round(), y_pred.round())
+  print('ROC AUC: %f' % auc)
+  # confusion matrix
+  results_confusion_matrix = confusion_matrix(y_test.round(), y_pred_classes.round())
+  print(matrix)
+  #results_confusion_matrix = confusion_matrix(X_act.round(), y_pred.round())
   modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
   cwd = os.getcwd()
   model_file_path = cwd + "/" + modelname
@@ -79,6 +119,9 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   y_pred_scaler_val = 1/scale_val[0]
   Y = y_pred * y_pred_scaler_val
   y_act = y_test * y_pred_scaler_val
+  Y_list = list(Y)
+  Complete_df = data_test
+  Complete_df['Prediction'] = Y_list 
   # Visualising the results
   plt.figure(figsize=(fig_size_x, fig_size_y))
   plt.plot(y_act, color = 'red', label = Y_actual_label)
@@ -88,7 +131,12 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   plt.ylabel(y_Label)
   plt.legend(loc='best')
   plt.show()
-
+  model_information = {'Accuracy': accuracy, 'Precision': precision, 'Recall': recall, 'f1': f1, \
+                       'Kappa': kappa, 'AUC': auc, 'Confusion Matrix': results_confusion_matrix, 'Model Name': modelname,\
+                       'Train Percent': train_percent, 'Look Back': look_Back, 'Optimizer': optimizer_Name, 'Loss': loss_Name,\
+                       'No Of Units': noofunits, 'Activation Function':activation_Function, 'Dropout Percent': dropout_Unit,\
+                       'Hidden Layer': hidden_Layer_Count, 'Epochs': Epochs, 'Batch Size': batch_Size, 'Actual and Prediction': Complete_df}
+  return model_information
 
 
 def normalize_divide_chunks(data_train, scaler, look_back, start,end):
@@ -107,7 +155,6 @@ def normalize_divide_chunks(data_train, scaler, look_back, start,end):
   Eg: X_train, y_train = normalize_divide_chunks(X_train, scaler, 30, 0, 3)
   """
   data_train = scaler.fit_transform(data_train)
-  print(data_train)
   X_train = []
   y_train = []
   pred_column_no = slice(start,end,None)
@@ -156,6 +203,6 @@ def Model_Design(optimizer_name, loss_name, model, units, multiple_units, activa
   model.add(Dense(units = 1))
   model.compile(optimizer=optimizer_name, loss = loss_name)
   
-  model.summary()
+  #model.summary()
   
   return model
