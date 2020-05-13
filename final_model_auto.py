@@ -4,7 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import Sequential
 from matplotlib import pyplot as plt
 import numpy as np
-
+import os
 def Complete_data_modelling(data, train_percent, look_Back, \
                             start_col, end_col, model_filename, optimizer_Name, loss_Name, noofunits, multiple_units,\
                             activation_Function, dropout_Unit, hidden_Layer_Count, Epochs, batch_Size, fig_size_x, fig_size_y, \
@@ -71,6 +71,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   X_test, y_test = normalize_divide_chunks(data_new, scaler=scaler, look_back=look_Back, start=start_col, end=end_col)
   y_pred = model_built.predict(X_test)
   modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
+  cwd = os.getcwd()
   model_file_path = %pwd + "/" + modelname
   print("Model File name: {}".format(model_file_path))
   model_built.save_weights(modelname)
