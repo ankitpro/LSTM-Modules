@@ -108,7 +108,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   print('ROC AUC: %f' % auc)
   # confusion matrix
   results_confusion_matrix = confusion_matrix(y_test.round(), y_pred_classes.round())
-  print(matrix)
+  print(results_confusion_matrix)
   #results_confusion_matrix = confusion_matrix(X_act.round(), y_pred.round())
   modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
   cwd = os.getcwd()
