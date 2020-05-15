@@ -13,6 +13,7 @@ from sklearn.metrics import cohen_kappa_score
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
+from datetime import datetime
 import numpy as np
 import os
 def Complete_data_modelling(data, train_percent, look_Back, \
@@ -132,7 +133,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   plt.legend(loc='best')
   plt.show()
   end_time = datetime.now()
-  exec_time = end_time - start_time1
+  exec_time = end_time - start_time
   model_information = {'Accuracy': accuracy, 'Precision': precision, 'Recall': recall, 'f1': f1, \
                        'Kappa': kappa, 'AUC': auc, 'Confusion Matrix': results_confusion_matrix, 'Model Name': modelname,\
                        'Train Percent': train_percent, 'Look Back': look_Back, 'Optimizer': optimizer_Name, 'Loss': loss_Name,\
