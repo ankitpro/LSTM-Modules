@@ -18,7 +18,7 @@ import os
 def Complete_data_modelling(data, train_percent, look_Back, \
                             start_col, end_col, model_filename, optimizer_Name, loss_Name, noofunits, multiple_units,\
                             activation_Function, dropout_Unit, hidden_Layer_Count, Epochs, batch_Size, fig_size_x, fig_size_y, \
-                            Y_pred_label, Y_actual_label, graph_Title, x_Label, y_Label):
+                            Y_pred_label, Y_actual_label, graph_Title, x_Label, y_Label,start_time):
   """
   data = Date of type dataframe with all the actuals and to be predicted columns. (data = input_Data)
 
@@ -131,11 +131,14 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   plt.ylabel(y_Label)
   plt.legend(loc='best')
   plt.show()
+  end_time = datetime.now()
+  exec_time = end_time - start_time1
   model_information = {'Accuracy': accuracy, 'Precision': precision, 'Recall': recall, 'f1': f1, \
                        'Kappa': kappa, 'AUC': auc, 'Confusion Matrix': results_confusion_matrix, 'Model Name': modelname,\
                        'Train Percent': train_percent, 'Look Back': look_Back, 'Optimizer': optimizer_Name, 'Loss': loss_Name,\
                        'No Of Units': noofunits, 'Activation Function':activation_Function, 'Dropout Percent': dropout_Unit,\
-                       'Hidden Layer': hidden_Layer_Count, 'Epochs': Epochs, 'Batch Size': batch_Size, 'Actual and Prediction': Complete_df}
+                       'Hidden Layer': hidden_Layer_Count, 'Epochs': Epochs, 'Batch Size': batch_Size,'Exection Time': exec_time, 'Actual and Prediction': Complete_df}
+  print('Duration: {}'.format(exec_time))
   return model_information
 
 
