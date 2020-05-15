@@ -141,7 +141,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
                        'No Of Units': noofunits, 'Activation Function':activation_Function, 'Dropout Percent': dropout_Unit,\
                        'Hidden Layer': hidden_Layer_Count, 'Epochs': Epochs, 'Batch Size': batch_Size,'Exection Time': exec_time, 'Actual and Prediction': Complete_df}
   print('Duration: {}'.format(exec_time))
-  return model_information, y_act, Y
+  return model_information
 
 
 def normalize_divide_chunks(data_train, scaler, look_back, start,end):
