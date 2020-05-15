@@ -69,17 +69,18 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   """
   data_train = data[0:round(data.shape[0]*train_percent)] 
   data_test = data[round(data.shape[0]*train_percent):] 
-  scaler = MinMaxScaler()
-  X_train, y_train = normalize_divide_chunks(data_train=data_train, scaler=scaler, look_back=look_Back, start=start_col, end=end_col)
+  scaler_train = MinMaxScaler()
+  X_train, y_train = normalize_divide_chunks(data_train=data_train, scaler=scaler_train, look_back=look_Back, start=start_col, end=end_col)
   model = Sequential()
   model_built =  Model_Design(optimizer_name=optimizer_Name, loss_name=loss_Name, model=model, \
                               units= noofunits, multiple_units=multiple_units, activation_function=activation_Function, \
                               input_shape_row=X_train.shape[1], input_shape_col= X_train.shape[2], \
                               dropout_unit=dropout_Unit, hidden_layer_count=hidden_Layer_Count)
   model_built.summary()
+  scaler_test = MinMaxScaler()
   data_new = data_train.tail(look_Back)
   data_new = data_new.append(data_test, ignore_index=True)
-  X_test, y_test = normalize_divide_chunks(data_new, scaler=scaler, look_back=look_Back, start=start_col, end=end_col)
+  X_test, y_test = normalize_divide_chunks(data_new, scaler=scaler_test, look_back=look_Back, start=start_col, end=end_col)
   history_model = model_built.fit(X_train, y_train, epochs=Epochs, batch_size=batch_Size, validation_data=(X_test, y_test), shuffle=False)
   # predict probabilities for test set
   y_pred = model_built.predict(X_test, verbose=0)
@@ -116,7 +117,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   model_file_path = cwd + "/" + modelname
   print("Model File name: {}".format(model_file_path))
   model_built.save_weights(modelname)
-  scale_val = scaler.scale_
+  scale_val = scaler_test.scale_
   y_pred_scaler_val = 1/scale_val[0]
   Y = y_pred * y_pred_scaler_val
   y_act = y_test * y_pred_scaler_val
@@ -140,7 +141,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
                        'No Of Units': noofunits, 'Activation Function':activation_Function, 'Dropout Percent': dropout_Unit,\
                        'Hidden Layer': hidden_Layer_Count, 'Epochs': Epochs, 'Batch Size': batch_Size,'Exection Time': exec_time, 'Actual and Prediction': Complete_df}
   print('Duration: {}'.format(exec_time))
-  return model_information
+  return model_information, y_act, Y
 
 
 def normalize_divide_chunks(data_train, scaler, look_back, start,end):
