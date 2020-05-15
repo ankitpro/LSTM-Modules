@@ -200,7 +200,7 @@ def Model_Design(optimizer_name, loss_name, model, units, multiple_units, activa
   for i in range(0, hidden_layer_count):
     model.add(LSTM(units = units, activation = activation_function, return_sequences = True))
     model.add(Dropout(dropout_unit))
-    units = units+i*multiple_units
+    units = units + multiple_units
 
   model.add(LSTM(units = units, activation = activation_function))
   model.add(Dropout(dropout_unit))
