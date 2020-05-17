@@ -67,29 +67,50 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   
   y_Label = Label to be seen on the Y axis. (y_Label = "Date Time")
   """
-  data_train = data[0:round(data.shape[0]*train_percent)] 
-  data_test = data[round(data.shape[0]*train_percent):] 
-  scaler_train = MinMaxScaler()
-  X_train, y_train = normalize_divide_chunks(data_train=data_train, scaler=scaler_train, look_back=look_Back, start=start_col, end=end_col)
+  scalar_usage = 0
+  train_percent = train_percent
+  try:
+    data_train = data[0:round(data.shape[0]*train_percent)] 
+    data_test = data[round(data.shape[0]*train_percent):] 
+  except:
+    print("Train Percentage is not a float")
+  #print(data_train, data_test)
+  scaler = MinMaxScaler()
+  #X_train, y_train = normalize_divide_chunks(data_train=data_train, scaler=scaler, look_back=look_Back, start=start_col, end=end_col, scalar_usage=scalar_usage)
+  X_train, y_train = normalize_divide_chunks(data_train=data_train, scaler=scaler, look_back=look_Back, start=start_col, end=end_col,scalar_usage=0)
   model = Sequential()
   model_built =  Model_Design(optimizer_name=optimizer_Name, loss_name=loss_Name, model=model, \
                               units= noofunits, multiple_units=multiple_units, activation_function=activation_Function, \
                               input_shape_row=X_train.shape[1], input_shape_col= X_train.shape[2], \
                               dropout_unit=dropout_Unit, hidden_layer_count=hidden_Layer_Count)
   model_built.summary()
-  scaler_test = MinMaxScaler()
   data_new = data_train.tail(look_Back)
   data_new = data_new.append(data_test, ignore_index=True)
-  X_test, y_test = normalize_divide_chunks(data_new, scaler=scaler_test, look_back=look_Back, start=start_col, end=end_col)
+  X_test, y_test= normalize_divide_chunks(data_new, scaler=scaler, look_back=look_Back, start=start_col, end=end_col, scalar_usage=1)
   history_model = model_built.fit(X_train, y_train, epochs=Epochs, batch_size=batch_Size, validation_data=(X_test, y_test), shuffle=False)
   # predict probabilities for test set
   y_pred = model_built.predict(X_test, verbose=0)
+  modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
+  cwd = os.getcwd()
+  model_file_path = cwd + "/" + modelname
+  print("Model File name: {}".format(model_file_path))
+  model_built.save_weights(modelname)
+  Y_list = list(y_pred)
+  new_df = data_test.copy()
+  new_df.insert(loc=0, column='Predictions', value=Y_list)
+  new_df = new_df.drop([new_df.columns[1]], axis=1)
+  y_pred_inv = scaler.inverse_transform(new_df)
+  y_pred_inv_list = []
+  for pred_rows in range(0, len(y_pred_inv)):
+      y_pred_inv_list.append(y_pred_inv[pred_rows][0])
+  Complete_df = data_test.copy()
+  Complete_df['Predictions'] = y_pred_inv_list
+  Complete_df.reset_index(inplace = True, drop=True)
   # predict crisp classes for test set
   y_pred_classes = model_built.predict_classes(X_test, verbose=0)
   # reduce to 1d array
-  y_pred = y_pred[:, 0]
+  y_pred = np.array(y_pred_inv_list)
   y_pred_classes = y_pred_classes[:, 0]
-  #print(y_test,y_pred_classes)
   # accuracy: (tp + tn) / (p + n)
   accuracy = accuracy_score(y_test.round(), y_pred_classes.round())
   print('Accuracy: %f' % accuracy)
@@ -110,24 +131,11 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   print('ROC AUC: %f' % auc)
   # confusion matrix
   results_confusion_matrix = confusion_matrix(y_test.round(), y_pred_classes.round())
-  print(results_confusion_matrix)
-  #results_confusion_matrix = confusion_matrix(X_act.round(), y_pred.round())
-  modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_Back), str(noofunits),str(Epochs),str(batch_Size))
-  cwd = os.getcwd()
-  model_file_path = cwd + "/" + modelname
-  print("Model File name: {}".format(model_file_path))
-  model_built.save_weights(modelname)
-  scale_val = scaler_test.scale_
-  y_pred_scaler_val = 1/scale_val[0]
-  Y = y_pred * y_pred_scaler_val
-  y_act = y_test * y_pred_scaler_val
-  Y_list = list(Y)
-  Complete_df = data_test
-  Complete_df['Prediction'] = Y_list 
+  print('Confusion Matrix: {}'.format(results_confusion_matrix))
   # Visualising the results
   plt.figure(figsize=(fig_size_x, fig_size_y))
-  plt.plot(y_act, color = 'red', label = Y_actual_label)
-  plt.plot(Y, color = 'blue', label = Y_pred_label)
+  plt.plot(Complete_df[Complete_df.columns[0]], color = 'blue', label = Y_actual_label)
+  plt.plot(Complete_df['Predictions'], color = 'red', label = Y_pred_label)
   plt.title(graph_Title)
   plt.xlabel(x_Label)
   plt.ylabel(y_Label)
@@ -144,7 +152,7 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   return model_information
 
 
-def normalize_divide_chunks(data_train, scaler, look_back, start,end):
+def normalize_divide_chunks(data_train, scaler, look_back, start,end, scalar_usage):
   """
   It expects the following data:
   data_train = data to be trained.
@@ -157,9 +165,14 @@ def normalize_divide_chunks(data_train, scaler, look_back, start,end):
 
   end = end position of yth column to be predicted.
 
-  Eg: X_train, y_train = normalize_divide_chunks(X_train, scaler, 30, 0, 3)
+  scalar_usage = It is used to define if the scale is used for the first time or nth time.
+
+  Eg: X_train, y_train = normalize_divide_chunks(X_train, scaler, 30, 0, 3, 0)
   """
-  data_train = scaler.fit_transform(data_train)
+  if scalar_usage == 0:
+    data_train = scaler.fit_transform(data_train)
+  else:
+    data_train = scaler.transform(data_train)
   X_train = []
   y_train = []
   pred_column_no = slice(start,end,None)
@@ -167,11 +180,15 @@ def normalize_divide_chunks(data_train, scaler, look_back, start,end):
       X_train.append(data_train[i-look_back:i])
       y_train.append(data_train[i, pred_column_no])
   X_train, y_train = np.array(X_train), np.array(y_train)
+  #scalar_usage += 1
   return X_train, y_train
 
 
 
-def Model_Design(optimizer_name, loss_name, model, units, multiple_units, activation_function, input_shape_row, input_shape_col, dropout_unit, hidden_layer_count):
+
+def Model_Design(optimizer_name, loss_name, model, units, \
+                 multiple_units, activation_function, input_shape_row, \
+                 input_shape_col, dropout_unit, hidden_layer_count):
   """
   optimizer_name = Name of the optimizer you want to use in Sequential model. (optimiazer_name = 'adam')
   
