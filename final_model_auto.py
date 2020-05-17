@@ -115,19 +115,19 @@ def Complete_data_modelling(data, train_percent, look_Back, \
   accuracy = accuracy_score(y_test.round(), y_pred_classes.round())
   print('Accuracy: %f' % accuracy)
   # precision tp / (tp + fp)
-  precision = precision_score(y_test.round(), y_pred_classes.round())
+  precision = precision_score(y_test.round(), y_pred_classes.round(), average='macro')
   print('Precision: %f' % precision)
   # recall: tp / (tp + fn)
-  recall = recall_score(y_test.round(), y_pred_classes.round())
+  recall = recall_score(y_test.round(), y_pred_classes.round(), average='macro')
   print('Recall: %f' % recall)
   # f1: 2 tp / (2 tp + fp + fn)
-  f1 = f1_score(y_test.round(), y_pred_classes.round())
+  f1 = f1_score(y_test.round(), y_pred_classes.round(), average='macro')
   print('F1 score: %f' % f1)
   # kappa
   kappa = cohen_kappa_score(y_test.round(), y_pred_classes.round())
   print('Cohens kappa: %f' % kappa)
   # ROC AUC
-  auc = roc_auc_score(y_test.round(), y_pred.round())
+  auc = roc_auc_score(y_test.round(), y_pred.round(), average='macro')
   print('ROC AUC: %f' % auc)
   # confusion matrix
   results_confusion_matrix = confusion_matrix(y_test.round(), y_pred_classes.round())
