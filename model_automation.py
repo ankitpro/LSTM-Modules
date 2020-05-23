@@ -11,6 +11,15 @@ from datetime import datetime
 def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, multiple_units, activation_function, dropout_unit,\
              hidden_layer_count, Epochs, Batch_Size, look_back, prediction_column, Y_actual_label, Y_pred_label, \
              graph_Title, fig_size_x, fig_size_y, x_Label, y_Label, model_filename, start_time, verbose=0):
+  from sklearn.metrics import accuracy_score
+  from sklearn.metrics import precision_score
+  from sklearn.metrics import recall_score
+  from sklearn.metrics import f1_score
+  from sklearn.metrics import cohen_kappa_score
+  from sklearn.metrics import roc_auc_score
+  from sklearn.metrics import confusion_matrix
+  import os
+  from datetime import datetime
   if verbose == 1:
     print("------------- Debug Mode -------------")
   print("Start Time: start_time")
@@ -28,8 +37,22 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
     print("Batch_Size: {}".format(Batch_Size))
     print("look_back: {}".format(look_back))
     print("prediction_column: {}".format(prediction_column))
+  data = data.set_index(data.columns[0])
+  if verbose == 1:
+    print("Data_set_index_date: \n{}".format(data.head(5)))
   train_data = data[0:round(data.shape[0]*train_percent)] 
   test_data = data[round(data.shape[0]*train_percent):] 
+  if verbose == 1:
+    print("train_data: \n{}".format(train_data.head(5)))
+    print("test_data: \n{}".format(test_data.head(5)))
+  test_data_copy = test_data.copy()
+  test_data_copy = test_data_copy.reset_index()
+  if verbose == 1:
+    print("test_data_copy: \n{}".format(test_data_copy.head(5)))
+  test_data_date = pd.DataFrame()
+  test_data_date[test_data_copy.columns[0]] = list(test_data_copy[test_data_copy.columns[0]])
+  if verbose == 1:
+    print("test_data_date: \n{}".format(test_data_date.head(5)))
   from sklearn.preprocessing import MinMaxScaler
   sc=MinMaxScaler(feature_range=(0,1))
   train_norm=sc.fit_transform(train_data)
@@ -77,8 +100,11 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   predicted_scaled = sc.inverse_transform(predicted_scaled)   
   predicted_normalized = pd.DataFrame(data=predicted_scaled)
   Actual_column = test_data.columns[0]
-  predicted_normalized = predicted_normalized.rename(columns={0: "Predictions", 1: Actual_column})
-  predicted_normalized[Actual_column] = list(test_data[Actual_column])
+  complete_data = pd.DataFrame()
+  complete_data[test_data_date.columns[0]] = list(test_data_date[test_data_date.columns[0]])
+  complete_data["Predictions"] = predicted_normalized[predicted_normalized.columns[0]]
+  complete_data["Actual"] = list(test_data[test_data.columns[0]])
+  complete_data = complete_data.set_index(complete_data.columns[0])
   # predict crisp classes for test set
   y_pred_classes = model_built.predict_classes(X_test, verbose=0)
   # reduce to 1d array
@@ -102,12 +128,12 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   # confusion matrix
   results_confusion_matrix = confusion_matrix(y_test.round(), y_pred_classes.round())
   print('Confusion Matrix: {}'.format(results_confusion_matrix))
-  predicted_normalized = predicted_normalized.drop([2, 3], axis=1)
+  #predicted_normalized = predicted_normalized.drop([2, 3], axis=1)
   import matplotlib.pyplot as plt
   # Visualising the results
   plt.figure(figsize=(fig_size_x, fig_size_y))
-  plt.plot(predicted_normalized[Actual_column], color = 'blue', label = Y_actual_label)
-  plt.plot(predicted_normalized['Predictions'], color = 'red', label = Y_pred_label)
+  plt.plot(complete_data["Actual"], color = 'blue', label = Y_actual_label)
+  plt.plot(complete_data["Predictions"], color = 'red', label = Y_pred_label)
   plt.title(graph_Title)
   plt.xlabel(x_Label)
   plt.ylabel(y_Label)
@@ -119,10 +145,9 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
                         'Kappa': kappa, 'Confusion Matrix': results_confusion_matrix, 'Model Name': modelname,\
                         'Train Percent': train_percent, 'Look Back': look_back, 'Optimizer': optimizer_name, 'Loss': loss_name,\
                         'No Of Units': units, 'Activation Function':activation_function, 'Dropout Percent': dropout_unit,\
-                        'Hidden Layer': hidden_layer_count, 'Epochs': Epochs, 'Batch Size': Batch_Size,'Exection Time': exec_time, 'Actual and Prediction': predicted_normalized}
+                        'Hidden Layer': hidden_layer_count, 'Epochs': Epochs, 'Batch Size': Batch_Size,'Exection Time': exec_time, 'Actual and Prediction': complete_data}
   print('Duration: {}'.format(exec_time))
   return model_information
-
 
 def Model_Design(optimizer_name, loss_name, model, units, \
                  multiple_units, activation_function, input_shape_row, \
