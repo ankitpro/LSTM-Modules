@@ -24,4 +24,17 @@ def Logging_Notebook(notebook_name):
   #Setting the threshold of logger to DEBUG 
   logger.addHandler(fhandler)
   logger.setLevel(logging.DEBUG)
+  #logging.addHandler(fhandler)
+  #logging.setLevel(logging.DEBUG)
   return logger
+  """
+  log_filename = "Logging.log"
+  logger_info = Logging_Notebook(log_filename)
+  #Test messages 
+  logger_info.info("\n---------- Logging Started ----------") 
+  logger_info.debug("Harmless debug Message") 
+  logger_info.info("Just an information") 
+  logger_info.warning("Its a Warning") 
+  logger_info.error("Did you try to divide by zero") 
+  logger_info.critical("Ankit is Krazy") 
+  """
