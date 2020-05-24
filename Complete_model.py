@@ -1,16 +1,14 @@
+######################[ OBSELETE ]#################################
+
 # To download the module information from the GitRepo.
 #!wget https://raw.githubusercontent.com/ankitpro/LSTM-Modules/master/normalize.py
 #!wget https://raw.githubusercontent.com/ankitpro/LSTM-Modules/master/auto_model_design.py
-
 # To import the dependent modules.
 from normalize import normalize_divide_chunks
 from auto_model_design import Model_Design
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import Sequential
 from matplotlib import pyplot as plt
-
-######################[ OBSELETE ]#################################
-
 
 def Complete_data_modelling(data, train_percent, look_Back, \
                             start_col, end_col, model_filename, optimizer_Name, loss_Name, noofunits, multiple_units,\
