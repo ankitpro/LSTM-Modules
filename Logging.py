@@ -1,4 +1,4 @@
-def Logging_Notebook(notebook_name):
+def Logging_Notebook(notebook_name, app_name):
 
   #importing module 
   import logging, logging.handlers
@@ -12,7 +12,7 @@ def Logging_Notebook(notebook_name):
       converted = utc_dt.astimezone(my_tz)
       return converted.timetuple()
 
-  logger = logging.getLogger('spam_application')
+  logger = logging.getLogger(app_name)
   logging.Formatter.converter = customTime
   #logger.error("customTime")
 
@@ -29,7 +29,8 @@ def Logging_Notebook(notebook_name):
   return logger
   """
   log_filename = "Logging.log"
-  logger_info = Logging_Notebook(log_filename)
+  app_name = "Nifty_open_pred"
+  logger_info = Logging_Notebook(log_filename, app_name)
   #Test messages 
   logger_info.info("\n---------- Logging Started ----------") 
   logger_info.debug("Harmless debug Message") 
