@@ -24,3 +24,17 @@ def Logging_Notebook(log_name):
   logger.addHandler(fhandler)
   logger.setLevel(logging.DEBUG)
   return logger
+
+
+"""
+Usage Example:
+notebook_name = "Logging For the Code1.log"
+logger_info = Logging_Notebook(notebook_name)
+#Test messages 
+logger_info.info("\n---------- Logging Started ----------") 
+logger_info.debug("Harmless debug Message") 
+logger_info.info("Just an information") 
+logger_info.warning("Its a Warning") 
+logger_info.error("Did you try to divide by zero") 
+logger_info.critical("This is critical error") 
+"""
