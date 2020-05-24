@@ -177,7 +177,7 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   # Visualising the results
   plt.figure(figsize=(fig_size_x, fig_size_y))
   plt.plot(complete_data["Actual"], label='Actual', color='purple', lw=2, marker='+', markersize=5)
-  plt.plot(complete_data["Predictions"], label='Predictions', color='red', lw=2, marker='+', markersize=5)
+  plt.plot(complete_data["Predictions"], label='Predictions', color='green', lw=2, marker='+', markersize=5)
   plt.title(graph_Title)
   plt.xlabel(x_Label)
   plt.ylabel(y_Label)
