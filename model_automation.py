@@ -20,23 +20,71 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   from sklearn.metrics import confusion_matrix
   import os
   from datetime import datetime
+
+  """
+  data = Data of type dataframe with all the actuals and to be predicted columns. It shouold have date as first column and then predicted value in the second column.(data = input_Data)
+
+  train_percent = Percentage of data to be trained, the rest will be the test data [Varies between 0.5 - 0.8]. (train_percent=0.8)
+
+  optimizer_name = Name of the Optimizer to be used for Sequeantial model. (optimizer_Name = "adam")
+
+  loss_Name = Name of the loss function used for Sequeantial model. (loss_Name = 'mean_squared_error')
+
+  units = No of units to be defined in LSTM layers. (noofunits = 40)
+
+  multiple_units = No of units added to Units per consecutive layer.(multiple_units = 10) [Obsolete]
+
+  activation_function = Function to be used as activation in Sequential model.(activation_Function = 'relu')
+
+  dropout_unit = Percentage of units to be dropped after each layer [It varies between 0.2 - 0.8]. (dropout_Unit = 0.2)
+  
+  hidden_layer_count = Number of hidden layers you want. (hidden_layer_count = 3)
+
+  Epochs = No of Epochs to be defined in Sequential model. (Epochs=50)
+
+  Batch_Size = Batch Size to be defined in Sequential model [No of samples per batch]. (Batch_Size = )
+
+  look_Back = Number of look back days. (look_Back = 30)
+
+  prediction_column = Column number which you want to predict. (prediction_column = 1)
+
+  Y_actual_label = Label to be seen for Actual Values. (Y_actual_label = "Nifty Open Actuals")
+  
+  Y_pred_label = Label to be seen for Prediction Values. (Y_pred_label = "Nifty Open Predictions")
+
+  graph_Title = Title of the Graph. (graph_Title = "Nifty Predictions")
+
+  fig_size_x = Figure size of X axis of the graph. (fig_size_x = 18)
+
+  fig_size_y = Figure size of Y axis of the graph. (fig_size_y = 10)
+
+  x_Label = Label to be seen on the X axis. (x_Label = "Nifty Price")
+  
+  y_Label = Label to be seen on the Y axis. (y_Label = "Date Time")
+
+  model_filename = Name of the file with whcih model needs to be saved in current location. (model_filename = "Nifty_30days")
+
+  start_time = Time when the module execution started to calculate the time taken by the module to execute it. (start_time = datetime.now())
+  """
+
   if verbose == 1:
     print("------------- Debug Mode -------------")
   print("Start Time: start_time")
   if verbose == 1:
     print("Data: \n{}".format(data.head(5)))
     print("Train Size: {}".format(train_percent))
-    print("loss_name: {}".format(loss_name))
-    print("units: {}".format(units))
-    print("optimizer_name: {}".format(optimizer_name))
-    print("multiple_units: {}".format(multiple_units))
-    print("activation_function: {}".format(activation_function))
-    print("dropout_unit: {}".format(dropout_unit))
-    print("hidden_layer_count: {}".format(hidden_layer_count))
+    print("Loss Name: {}".format(loss_name))
+    print("No Of Units: {}".format(units))
+    print("Optimizer Name: {}".format(optimizer_name))
+    print("Multiple Units: {}".format(multiple_units))
+    print("Activation Function: {}".format(activation_function))
+    print("Dropout Unit: {}".format(dropout_unit))
+    print("Hidden Layer Count: {}".format(hidden_layer_count))
     print("Epochs: {}".format(Epochs))
-    print("Batch_Size: {}".format(Batch_Size))
-    print("look_back: {}".format(look_back))
-    print("prediction_column: {}".format(prediction_column))
+    print("Batch Size: {}".format(Batch_Size))
+    print("Look Back Days: {}".format(look_back))
+    print("Prediction Column Number: {}".format(prediction_column))
+    print("Prediction Column Name: {}".format(data.columns[prediction_column]))
   data = data.set_index(data.columns[0])
   if verbose == 1:
     print("Data_set_index_date: \n{}".format(data.head(5)))
@@ -56,6 +104,7 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   from sklearn.preprocessing import MinMaxScaler
   sc=MinMaxScaler(feature_range=(0,1))
   train_norm=sc.fit_transform(train_data)
+  prediction_column = prediction_column+1
   X_train=[]
   y_train=[]
   for i in range(look_back,len(train_data)):
@@ -185,5 +234,5 @@ def Model_Design(optimizer_name, loss_name, model, units, \
   model.add(LSTM(units = units, activation = activation_function))
   model.add(Dropout(dropout_unit))
   model.add(Dense(units = 1))
-  model.compile(optimizer=optimizer_name, loss = loss_name)
+  model.compile(optimizer=optimizer_name, loss = loss_name)  
   return model
