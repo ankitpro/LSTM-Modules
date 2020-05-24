@@ -116,8 +116,6 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
                               input_shape_row=X_train.shape[1], input_shape_col= X_train.shape[2], \
                               dropout_unit=dropout_unit, hidden_layer_count=hidden_layer_count)
   model_built.summary()
-  model_built.fit(X_train,y_train,epochs=Epochs,batch_size=Batch_Size)
-  modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_back), str(units),str(Epochs),str(Batch_Size))
   cwd = os.getcwd()
   model_file_path = cwd + "/" + modelname
   if verbose ==1:
@@ -133,6 +131,8 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
     X_test.append(inputs[i-look_back:i])
     y_test.append(inputs[i,prediction_column])
   X_test, y_test=np.array(X_test), np.array(y_test)
+  model_built.fit(X_train, y_train, epochs=Epochs, batch_size=Batch_Size, validation_data=(X_test, y_test))
+  modelname = "{}_lb{}_noUnit{}_ep{}_bs{}.h5".format(model_filename, str(look_back), str(units),str(Epochs),str(Batch_Size))
   if verbose ==1:
     print("X_test: \n{}".format(X_test[0:2]))
     print("y_test: \n{}".format(y_test[0:2]))
