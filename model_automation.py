@@ -25,7 +25,7 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   print("Start Time: start_time")
   if verbose == 1:
     print("Data: \n{}".format(data.head(5)))
-    print("Train Size: {}".format(train_size))
+    print("Train Size: {}".format(train_percent))
     print("loss_name: {}".format(loss_name))
     print("units: {}".format(units))
     print("optimizer_name: {}".format(optimizer_name))
@@ -132,8 +132,8 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   import matplotlib.pyplot as plt
   # Visualising the results
   plt.figure(figsize=(fig_size_x, fig_size_y))
-  plt.plot(complete_data["Actual"], color = 'blue', label = Y_actual_label)
-  plt.plot(complete_data["Predictions"], color = 'red', label = Y_pred_label)
+  plt.plot(complete_data["Actual"], label='Actual', color='purple', lw=2, marker='+', markersize=5)
+  plt.plot(complete_data["Predictions"], label='Predictions', color='red', lw=2, marker='+', markersize=5)
   plt.title(graph_Title)
   plt.xlabel(x_Label)
   plt.ylabel(y_Label)
@@ -177,19 +177,13 @@ def Model_Design(optimizer_name, loss_name, model, units, \
   from keras.layers import Dense,LSTM,Dropout
   model.add(LSTM(units = units, activation = activation_function, return_sequences = True, input_shape = (input_shape_row, input_shape_col)))
   model.add(Dropout(dropout_unit))
-
   #units = units + multiple_units
   for i in range(0, hidden_layer_count):
     model.add(LSTM(units = units, activation = activation_function, return_sequences = True))
     model.add(Dropout(dropout_unit))
     #units = units + multiple_units
-
   model.add(LSTM(units = units, activation = activation_function))
   model.add(Dropout(dropout_unit))
-
   model.add(Dense(units = 1))
   model.compile(optimizer=optimizer_name, loss = loss_name)
-  
-  #model.summary()
-  
   return model
