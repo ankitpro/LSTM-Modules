@@ -9,6 +9,9 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import Sequential
 from matplotlib import pyplot as plt
 
+######################[ OBSELETE ]#################################
+
+
 def Complete_data_modelling(data, train_percent, look_Back, \
                             start_col, end_col, model_filename, optimizer_Name, loss_Name, noofunits, multiple_units,\
                             activation_Function, dropout_Unit, hidden_Layer_Count, Epochs, batch_Size, fig_size_x, fig_size_y, \
