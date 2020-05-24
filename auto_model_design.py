@@ -33,13 +33,9 @@ def Model_Design(optimizer_name, loss_name, model, units, multiple_units, activa
     model.add(LSTM(units = units, activation = activation_function, return_sequences = True))
     model.add(Dropout(dropout_unit))
     units = units+i*multiple_units
-
   model.add(LSTM(units = units, activation = activation_function))
   model.add(Dropout(dropout_unit))
-
   model.add(Dense(units = 1))
   model.compile(optimizer=optimizer_name, loss = loss_name)
-  
   model.summary()
-  
   return model
