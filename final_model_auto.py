@@ -1,3 +1,6 @@
+######################[ OBSELETE ]#################################
+
+
 # To import the dependent modules.
 #from tensorflow.keras.layers import Dense, LSTM, Dropout
 #from tensorflow.keras import Sequential
