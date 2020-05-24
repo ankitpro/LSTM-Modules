@@ -5,21 +5,15 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import cohen_kappa_score
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
+import pandas as pd
+import numpy as np
 import os
 from datetime import datetime
+
 
 def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, multiple_units, activation_function, dropout_unit,\
              hidden_layer_count, Epochs, Batch_Size, look_back, prediction_column, Y_actual_label, Y_pred_label, \
              graph_Title, fig_size_x, fig_size_y, x_Label, y_Label, model_filename, start_time, verbose=0):
-  from sklearn.metrics import accuracy_score
-  from sklearn.metrics import precision_score
-  from sklearn.metrics import recall_score
-  from sklearn.metrics import f1_score
-  from sklearn.metrics import cohen_kappa_score
-  from sklearn.metrics import roc_auc_score
-  from sklearn.metrics import confusion_matrix
-  import os
-  from datetime import datetime
 
   """
   data = Data of type dataframe with all the actuals and to be predicted columns. It shouold have date as first column and then predicted value in the second column.(data = input_Data)
