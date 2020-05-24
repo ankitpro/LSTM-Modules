@@ -1,3 +1,5 @@
+######################[ OBSELETE ]#################################
+
 import numpy as np
 def normalize_divide_chunks(data_train, scaler, look_back, start,end):
   """
