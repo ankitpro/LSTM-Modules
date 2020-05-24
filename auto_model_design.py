@@ -1,4 +1,8 @@
+######################[ OBSELETE ]#################################
+
+
 from tensorflow.keras.layers import Dense, LSTM, Dropout
+
 def Model_Design(optimizer_name, loss_name, model, units, multiple_units, activation_function, input_shape_row, input_shape_col, dropout_unit, hidden_layer_count):
   """
   optimizer_name = Name of the optimizer you want to use in Sequential model. (optimiazer_name = 'adam')
