@@ -150,7 +150,8 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   complete_data["Actual"] = list(test_data[test_data.columns[0]])
   complete_data = complete_data.set_index(complete_data.columns[0])
   # predict crisp classes for test set
-  y_pred_classes = model_built.predict_classes(X_test, verbose=0)
+  #y_pred_classes = model_built.predict_classes(X_test, verbose=0)
+  y_pred_classes = (model_built.predict(X_test) > 0.5).astype("int32")
   # reduce to 1d array
   y_pred = np.array(predicted_scaled)
   y_pred_classes = y_pred_classes[:, 0]
