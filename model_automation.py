@@ -165,6 +165,7 @@ def LSTM_complete_auto(data, train_percent, optimizer_name, loss_name, units, mu
   recall = recall_score(y_test.round(), y_pred_classes.round(), pos_label='positive', average='micro')
   print('Recall: %f' % recall)
   # f1: 2 tp / (2 tp + fp + fn)
+  #replaced f1_score(y_test.round(), y_pred_classes.round()) with f1_score(y_test.round(), y_pred_classes.round(), average='micro')
   f1 = f1_score(y_test.round(), y_pred_classes.round(), average='micro')
   print('F1 score: %f' % f1)
   # kappa
